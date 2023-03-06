@@ -1,3 +1,8 @@
+'''
+yolov8 onnxruntime inference
+github: https://github.com/ultralytics/ultralytics
+'''
+
 import os
 import cv2
 import argparse
@@ -157,7 +162,7 @@ def parse_args():
     parser.add_argument("--nms_thr", type=float, default=0.5,
         help="nms threshold")
     parser.add_argument("--input_size", type=int, default=640,
-        help="inpur size")
+        help="input size")
     parser.add_argument("--classes_txt", type=str, default='',
         help="class names txt file.")
     parser.add_argument("--show", action="store_true")
@@ -174,7 +179,7 @@ def demo_image(args):
                            args.score_thr, args.nms_thr)
     img = cv2.imread(args.input)
     if img is None:
-        print(f"read image faild: {args.input}")
+        print(f"read image failed: {args.input}")
         return
     result = yolo.detect(img)
     img = yolo.draw_result(img, result)

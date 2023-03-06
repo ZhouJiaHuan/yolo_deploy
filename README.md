@@ -2,11 +2,12 @@
 
 This repository implemented the inference of yolo detectors with MNN and ONNXRuntime framework for fast deployment: 
 
-| model  | ONNX | MNN |
-|:------:|:----:|:---:|
-| YOLOx  | N    | Y   |
-| YOLOv6 | N    | Y   |
-| YOLOv8 | Y    | Y   |
+|      model       |                    Github                     | ONNX | MNN  |
+| :--------------: | :-------------------------------------------: | :--: | :--: |
+|      YOLOx       | https://github.com/Megvii-BaseDetection/YOLOX |  N   |  Y   |
+|      YOLOv6      |       https://github.com/meituan/YOLOv6       |  N   |  Y   |
+|      YOLOv8      |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |
+| YOLOv7-keypoints |    https://github.com/derronqi/yolov7-face    |  Y   |  N   |
 
 ## Requirements
 
