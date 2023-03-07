@@ -8,13 +8,14 @@ import os
 import numpy as np
 import cv2
 import argparse
+import json
 import onnxruntime
+from tqdm import tqdm
 from typing import Tuple, Dict
 
 COLOR_LIST = list([[128, 255, 0], [255, 128, 50], [128, 0, 255], [255, 255, 0],
                    [255, 102, 255], [255, 51, 255], [51, 153, 255], [255, 153, 153],
                    [255, 51, 51], [153, 255, 153], [51, 255, 51], [0, 255, 0]])
-
 
 class Yolov7KeypointsInference(object):
     ''' yolov7-face onnxruntime inference
@@ -98,16 +99,15 @@ class Yolov7KeypointsInference(object):
                 if score > 0:
                     cv2.circle(img, (int(x), int(y)), 2, COLOR_LIST[idx], -1)
         return img
-    
 
 def parse_args():
     parser = argparse.ArgumentParser("yolov7 keypoints onnx inference demo")
     parser.add_argument("demo", type=str,
-        help="demo type, image or stream")
+        help="demo type, image | stream")
     parser.add_argument("model", type=str,
         help="onnx model path")
     parser.add_argument("input", type=str, default="0",
-        help="camera id | video path | image path")
+        help="camera id | video path | image path | image dir")
     parser.add_argument("--box_score", type=float, default=0.25,
         help="box score threshold")
     parser.add_argument("--kpt_score", type=float, default=0.5,
@@ -117,10 +117,8 @@ def parse_args():
     parser.add_argument("--show", action="store_true")
     return parser.parse_args()
 
-
 def demo_image(args):
     input_size = (args.input_size, args.input_size)
-
     yolo = Yolov7KeypointsInference(args.model, input_size, args.box_score, args.kpt_score)
     img = cv2.imread(args.input)
     if img is None:
@@ -136,10 +134,35 @@ def demo_image(args):
         kpt = list(map(lambda k: round(k, 3), kpt))
         print(f"{int(label)}: {score:.3}\t{box}\t{kpt}")
       
-    if (args.show):
+    if args.show:
         cv2.imshow("detect", img)
         cv2.waitKey(0)
 
+def demo_image_dir(args):
+    input_size = (args.input_size, args.input_size)
+    yolo = Yolov7KeypointsInference(args.model, input_size, args.box_score, args.kpt_score)
+
+    assert os.path.isdir(args.input), f"invalid image directory: {args.input}"
+    img_list = [os.path.basename(img_name) for img_name in os.listdir(args.input) 
+                if img_name.split('.')[-1] in ('jpg', 'png')]
+    save_dir = 'result_' + os.path.abspath(args.input).replace('/', '_')
+    os.makedirs(save_dir, exist_ok=True)
+    for img_name in tqdm(img_list):
+        img_path = os.path.join(args.input, img_name)
+        img = cv2.imread(img_path)
+        if img is None:
+            print(f'read image failed: {img_path}')
+            continue
+        result = yolo.detect(img)
+        img_result = yolo.draw_result(img, result)
+        cv2.imwrite(os.path.join(save_dir, img_name), img_result)
+        with open(os.path.join(save_dir, img_name.split('.')[0]+'.json'), 'w') as f:
+            result['img_name'] = img_name
+            result['img_size'] = img.shape[:2][::-1]
+            json.dump(result, f)
+        if args.show:
+            cv2.imshow('detect', img_result)
+            cv2.waitKey(100)
 
 def demo_stream(args):
     input_size = (args.input_size, args.input_size)
@@ -164,11 +187,16 @@ def demo_stream(args):
             num = len(result['boxes'])
             print(f"detect {num} objects")
 
-
 def main():
     args = parse_args()
     if args.demo == 'image':
-        return demo_image(args)
+        if os.path.isfile(args.input):
+            return demo_image(args)
+        elif os.path.isdir(args.input):
+            return demo_image_dir(args)
+        else:
+            print(f"invalid input: {args.input}")
+            return
     elif args.demo == 'stream':
         return demo_stream(args)
 
