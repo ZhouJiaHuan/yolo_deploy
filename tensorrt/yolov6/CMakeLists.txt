@@ -13,8 +13,8 @@ include_directories(/usr/local/cuda/include)
 link_directories(/usr/local/cuda/lib64)
 
 # tensorrt (modified to your tensorRT path)
-include_directories(/opt/TensorRT-8.2.1.8/include)
-link_directories(/opt/TensorRT-8.2.1.8/lib)
+include_directories(/opt/TensorRT-8.5.1.7/include)
+link_directories(/opt/TensorRT-8.5.1.7/lib)
 
 add_executable(yolov6_trt src/main.cpp src/yolov6_trt.cpp)
 target_link_libraries(yolov6_trt nvinfer cudart ${OpenCV_LIBS})

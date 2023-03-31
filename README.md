@@ -13,7 +13,7 @@ This repository implemented the inference of yolo detectors with MNN and ONNXRun
 
 - MNN >= 2.0.0
 - ONNXRuntime
-- TensorRT >= 8.2
+- TensorRT >= 8.5
 
 ## Demo
 
@@ -32,8 +32,8 @@ python yolov8_onnx_inference.py DEMO MODEL INPUT [--score_thr SCORE_THR] [--nms_
 
 ## TensorRT inference
 # you may need to modify the TensorRT path in CMakeLists.txt according to your install path
-# include_directories(/opt/TensorRT-8.2.1.8/include)
-# link_directories(/opt/TensorRT-8.2.1.8/lib)
+# include_directories(/opt/TensorRT-8.5.1.7/include)
+# link_directories(/opt/TensorRT-8.5.1.7/lib)
 cd tensorrt/yolov8/
 mkdir build && cd build
 cmake ..
