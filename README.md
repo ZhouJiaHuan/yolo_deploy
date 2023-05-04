@@ -8,7 +8,7 @@ This repository implemented the inference of yolo detectors with **ONNXRuntime**
 |      YOLOv6      |       https://github.com/meituan/YOLOv6       |  N   |  Y   |    Y     |
 |      YOLOv8      |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
 | YOLOv7-keypoints |    https://github.com/derronqi/yolov7-face    |  Y   |  N   |    N     |
-| YOLOv8-keypoints |  https://github.com/ultralytics/ultralytics   |  Y   |  N   |    N     |
+| YOLOv8-keypoints |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
 
 ## Requirements
 
