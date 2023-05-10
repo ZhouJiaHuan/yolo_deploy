@@ -75,7 +75,7 @@ class Yolov8Inference(object):
                  nms_thr=0.2) -> None:
         assert onnx_path.endswith('.onnx'), f"invalid onnx model: {onnx_path}"
         assert os.path.exists(onnx_path), f"model not found: {onnx_path}"
-        self.sess = onnxruntime.InferenceSession(onnx_path)
+        self.sess = onnxruntime.InferenceSession(onnx_path, providers=['CPUExecutionProvider'])
         print("input info: ", self.sess.get_inputs()[0])
         print("output info: ", self.sess.get_outputs()[0])
         self.input_size = input_size
