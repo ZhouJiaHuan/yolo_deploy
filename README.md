@@ -1,3 +1,5 @@
+<img src="./assets/track_result.gif" alt="track_result" style="zoom:100%;" />
+
 ## Introduction
 
 This repository implemented the inference of yolo detectors with **ONNXRuntime**, **MNN** and **TensorRT** framework for fast deployment: 
@@ -9,6 +11,7 @@ This repository implemented the inference of yolo detectors with **ONNXRuntime**
 |      YOLOv8      |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
 | YOLOv7-keypoints |    https://github.com/derronqi/yolov7-face    |  Y   |  N   |    N     |
 | YOLOv8-keypoints |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
+|    YOLOv8-sot    |  https://github.com/ultralytics/ultralytics   |  N   |  N   |    Y     |
 
 ## Requirements
 
@@ -104,5 +107,19 @@ Yolov8-n inference with camera using TensorRT
 
 ```shell
 ./yolov8_trt stream /path/to/yolov8n_coco_640_fp16.trt coco 0 640 1
+```
+
+Yolov8-n SOT with camera using TensorRT
+
+```bash
+./yolov8_sot track /path/to/yolov8n_coco_640_fp16.trt coco 0 640
+# select your tracking target by clicking the detection bounding box with mouse left button
+```
+
+Yolov8-n SOT with video file using TensorRT
+
+```bash
+./yolov8_sot track /path/to/yolov8n_coco_640_fp16.trt coco /path/to/video.mp4 640
+# select your tracking target by clicking the detection bounding box with mouse left button
 ```
 

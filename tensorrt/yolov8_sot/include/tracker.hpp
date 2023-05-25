@@ -8,6 +8,12 @@
 #include <opencv2/video/tracking.hpp>
 #include <yolov8_trt.hpp>
 
+/* bounding box kalman filter with top-left and bottom-right point
+ * state: (tl_x, tl_y, br_x, br_y, tl_vx, tl_vy, br_vx, br_vy)
+ * measure: (tl_x, tl_y, br_x, br_y)
+ * x(k+1) = x(k) + v * dt
+ * v(k+1) = v(k)
+ */
 class BoxKalmanFilter
 {
 public:
@@ -73,7 +79,15 @@ private:
     std::shared_ptr<cv::KalmanFilter> kf_;
 };
 
-
+/* simplified bounding box tracking with kalman filter and iou
+ * step 0: select a bounding box for tracking
+ * step 1: init tracker status
+ * step 2: predict next position with kalman filter
+ * step 3: detect objects in the next frame
+ * step 4: select the best match based on the IOU between detection and prediction
+ * step 5: correct bounding box position with the best match object
+ * step 6: update tracking status
+ */
 class Tracker
 {
 public:
