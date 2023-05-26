@@ -8,23 +8,27 @@
 #include <opencv2/video/tracking.hpp>
 #include <yolov8_trt.hpp>
 
-/* bounding box kalman filter with top-left and bottom-right point
- * state: (tl_x, tl_y, br_x, br_y, tl_vx, tl_vy, br_vx, br_vy)
- * measure: (tl_x, tl_y, br_x, br_y)
- * x(k+1) = x(k) + v * dt
- * v(k+1) = v(k)
+
+/* bounding box kalman filter with const-velocity model
+ * assume box size (w & h) was not changed in a short time
+ * state: box center, width and height, (x, y, w, h, vx, vy)
+ * measure: (x, y, w, h)
+ * x(k+1) = x(k) + vx * dt
+ * y(k+1) = y(k) + vy * dt
+ * w(k+1) = w(k)
+ * h(k+1) = h(k)
  */
-class BoxKalmanFilter
+class BoxXYWHKalmanFilter
 {
 public:
-    BoxKalmanFilter(double dt, double pNoise=1e-4, double qNoise=1e-8):
+    BoxXYWHKalmanFilter(double dt, double pNoise=1e-5, double qNoise=1e-5):
         dt_(dt), pNoise_(pNoise), qNoise_(qNoise)
     {
         kf_ = std::make_shared<cv::KalmanFilter>();
         init();
     }
 
-    ~BoxKalmanFilter(){}
+    ~BoxXYWHKalmanFilter(){}
 
     void init()
     {
@@ -42,14 +46,16 @@ public:
     {
         kf_->statePre = cv::Mat::zeros(stateSize_, 1, CV_32F);
         kf_->statePost = cv::Mat::zeros(stateSize_, 1, CV_32F);
-        kf_->statePre.at<float>(0, 0) = bbox.tl().x;
-        kf_->statePre.at<float>(1, 0) = bbox.tl().y;
-        kf_->statePre.at<float>(2, 0) = bbox.br().x;
-        kf_->statePre.at<float>(3, 0) = bbox.br().y;
-        kf_->statePost.at<float>(0, 0) = bbox.tl().x;
-        kf_->statePost.at<float>(1, 0) = bbox.tl().y;
-        kf_->statePost.at<float>(2, 0) = bbox.br().x;
-        kf_->statePost.at<float>(3, 0) = bbox.br().y;
+        float cx = bbox.x + bbox.width / 2;
+        float cy = bbox.y + bbox.height / 2;
+        kf_->statePre.at<float>(0, 0) = cx;
+        kf_->statePre.at<float>(1, 0) = cy;
+        kf_->statePre.at<float>(2, 0) = bbox.width;
+        kf_->statePre.at<float>(3, 0) = bbox.height;
+        kf_->statePost.at<float>(0, 0) = cx;
+        kf_->statePost.at<float>(1, 0) = cy;
+        kf_->statePost.at<float>(2, 0) = bbox.width;
+        kf_->statePost.at<float>(3, 0) = bbox.height;
     }
 
     const cv::Mat& predict()
@@ -69,15 +75,42 @@ public:
         return kf_->correct(measurement);
     }
 
-public:
+    cv::Mat setMeasure(const cv::Rect& bbox) const
+    {
+        cv::Mat measure = cv::Mat::zeros(measSize_, 1, CV_32F);
+        measure.at<float>(0, 0) = bbox.x + bbox.width / 2;
+        measure.at<float>(1, 0) = bbox.y + bbox.height / 2;
+        measure.at<float>(2, 0) = bbox.width;
+        measure.at<float>(3, 0) = bbox.height;
+        return measure;
+    }
+
+    cv::Rect getRectPost() const
+    {
+        const float& x = kf_->statePost.at<float>(0, 0);
+        const float& y = kf_->statePost.at<float>(1, 0);
+        const float& w = kf_->statePost.at<float>(2, 0);
+        const float& h = kf_->statePost.at<float>(3, 0);
+        return cv::Rect(x-w/2, y-h/2, w, h);
+    }
+
+    cv::Rect getRectPre() const
+    {
+        const float& x = kf_->statePre.at<float>(0, 0);
+        const float& y = kf_->statePre.at<float>(1, 0);
+        const float& w = kf_->statePre.at<float>(2, 0);
+        const float& h = kf_->statePre.at<float>(3, 0);
+        return cv::Rect(x-w/2, y-h/2, w, h);
+    }
 
 private:
     double dt_;
-    const int stateSize_ = 8;
+    const int stateSize_ = 6;
     const int measSize_ = 4;
     double pNoise_, qNoise_;
     std::shared_ptr<cv::KalmanFilter> kf_;
 };
+
 
 /* simplified bounding box tracking with kalman filter and iou
  * step 0: select a bounding box for tracking
@@ -101,7 +134,7 @@ public:
     Tracker(double dt=0.03, size_t keep=30, double iouThr=0.5):
         keep_(keep), iouThr_(iouThr)
     {
-        bboxKF_ = std::make_shared<BoxKalmanFilter>(dt);
+        bboxKF_ = std::make_shared<BoxXYWHKalmanFilter>(dt);
         initTracker();
     }
     
@@ -135,7 +168,7 @@ private:
     double iouThr_;
     int lostCount = 0;
     const int lostCountMax = 30;
-    std::shared_ptr<BoxKalmanFilter> bboxKF_;
+    std::shared_ptr<BoxXYWHKalmanFilter> bboxKF_;
 };
 
 

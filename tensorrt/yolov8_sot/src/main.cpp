@@ -18,7 +18,7 @@ static const std::vector<std::string> COCO_NAMES = {
 #define CV_FONT cv::FONT_HERSHEY_COMPLEX_SMALL
 
 std::vector<Object> objects;
-Tracker tracker(0.03, 30, 0.5);
+Tracker tracker(0.033, 100, 0.3);
 cv::Mat image;
 
 static void onMouse(int event, int x, int y, int, void*)
