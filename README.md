@@ -1,4 +1,4 @@
-<img src="./assets/track_result.gif" alt="track_result" style="zoom:100%;" />
+<img src="./assets/track_result.gif" alt="track_result" style="zoom: 150%;" />
 
 ## Introduction
 

@@ -1,3 +1,4 @@
+#include <ctime>
 #include "yolov8_trt.hpp"
 #include "tracker.hpp"
 
@@ -50,9 +51,9 @@ cv::VideoCapture initCap(std::string camId)
     if (camId.size() == 1)
     {
         cap = cv::VideoCapture(atoi(camId.c_str()));
-        cap.set(cv::CAP_PROP_FPS, 30);
         cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
         cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+        cap.set(cv::CAP_PROP_FPS, 30);
     }
     else
     {
@@ -67,6 +68,7 @@ void track_demo(int argc, char** argv)
     const int size = atoi(argv[5]);
     std::vector<std::string> labels;
     std::string dataset = argv[3];
+    bool save = argc == 7? atoi(argv[6]): 0;
     if (dataset == "coco")
     {
         labels = COCO_NAMES;
@@ -95,6 +97,19 @@ void track_demo(int argc, char** argv)
         return;
     }
 
+    cv::VideoWriter writer;
+    if (save)
+    {
+        cap >> image;  // clear cache
+        std::time_t stamp = std::time(0);
+        std::string saveName = "result_" + std::to_string(stamp) + ".mp4";
+        double fps = cap.get(cv::CAP_PROP_FPS);
+        cv::Size saveSize = cv::Size((int)cap.get(cv::CAP_PROP_FRAME_WIDTH),
+                                 (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+        writer.open(saveName, cv::VideoWriter::fourcc('m','p','4','v'), fps, saveSize);
+        std::cout << "save video to " << saveName << std::endl;
+    }
+
     cv::namedWindow("result", cv::WINDOW_AUTOSIZE);
     cv::setMouseCallback("result", onMouse);
 
@@ -120,20 +135,27 @@ void track_demo(int argc, char** argv)
         tracker.draw(image);
         std::string speedStr = "speed: " + std::to_string(int(1000/timeMs)) + " FPS"; 
         cv::putText(image, speedStr, cv::Point(5, 20), CV_FONT, 1, cv::Scalar(0, 0, 255));
+        if (save)
+        {
+            writer.write(image);
+        }
         cv::imshow("result", image);
         if (cv::waitKey(1) == 'q')
         {
             break;
         }
     }
+
+    cap.release();
+    writer.release();
 }
 
 
 int main(int argc, char** argv)
 {
-    if (argc != 6)
+    if (argc != 6 && argc != 7)
     {
-        fprintf(stderr, "usage: %s [demo] [model_path] [dataset] [input] [input_size] ..\n", argv[0]);
+        fprintf(stderr, "usage: %s [demo] [model_path] [dataset] [input] [input_size] [save] ..\n", argv[0]);
         return -1;
     }
     cudaSetDevice(CUDA_DEVICE);
