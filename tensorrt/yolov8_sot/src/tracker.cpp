@@ -22,7 +22,7 @@ bool Tracker::selectTarget(const cv::Point& p, const std::vector<Object>& object
     }
     
     target_.clear();
-    bboxKF_->init();
+    bboxKF_->initKf(dt_);
     if (minDis < 10000)
     {  
         target_.push_back(currentTarget.rect);
