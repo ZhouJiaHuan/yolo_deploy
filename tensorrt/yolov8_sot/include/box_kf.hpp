@@ -11,7 +11,10 @@
 class BoxKalmanFilter
 {
 public:
-    BoxKalmanFilter() {}
+    BoxKalmanFilter()
+    {
+        kf_ = std::make_shared<cv::KalmanFilter>();
+    }
     BoxKalmanFilter(double dt, double pNoise, double qNoise)
     {
         kf_ = std::make_shared<cv::KalmanFilter>();

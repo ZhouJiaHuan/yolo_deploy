@@ -21,9 +21,8 @@ bool Tracker::selectTarget(const cv::Point& p, const std::vector<Object>& object
         }
     }
     
-    target_.clear();
-    bboxKF_->initKf(dt_);
-    if (minDis < 10000)
+    initTracker();
+    if (minDis < 10000.0f)
     {  
         target_.push_back(currentTarget.rect);
         label_ = currentTarget.label;
@@ -71,14 +70,15 @@ void Tracker::step(const std::vector<Object>& objects)
         target_.insert(target_.begin(), bboxKF_->getRectPost());
         lostCount = 0;
     }
-    else if (++lostCount < lostCountMax)
+    else if (lostCount < lostCountMax)
     {
+        lostCount += 1;
         target_.insert(target_.begin(), boxPre);
     }
     else
     {
-        // reset
         initTracker();
+        std::cout << "tracking target lost!" << std::endl;
     }
 }
 

@@ -17,6 +17,7 @@
 class Tracker
 {
 public:
+    enum KalmanType {KF_BBOX_XYWH, KF_BBOX_XYXY};
     static double computeIou(const cv::Rect& box1, const cv::Rect& box2)
     {
         int iArea = (box1 & box2).area();
@@ -24,20 +25,21 @@ public:
         return 1.0 * iArea / uArea;
     }
 
-    Tracker(double dt=0.03, size_t keep=30, double iouThr=0.5, std::string kf="xywh"):
+    Tracker(double dt=0.03, size_t keep=30, double iouThr=0.5, KalmanType kf=KF_BBOX_XYWH):
         dt_(dt), keep_(keep), iouThr_(iouThr)
     {
-        if (kf == "xywh")
+        if (kf == KF_BBOX_XYWH)
         {
-            bboxKF_ = std::make_shared<BoxXYWHKalmanFilter>(dt, 1e-5, 1e-5);
+            bboxKF_ = std::make_shared<BoxXYWHKalmanFilter>();
         }
-        else if (kf == "xyxy")
+        else if (kf == KF_BBOX_XYXY)
         {
-            bboxKF_ = std::make_shared<BoxXYXYKalmanFilter>(dt, 1e-5, 1e-5);
+            bboxKF_ = std::make_shared<BoxXYXYKalmanFilter>();
         }
         else
         {
-            std::cerr << "invalid kalman filter type: " << kf.c_str() << std::endl;
+            std::cerr << "invalid kalman filter type!" << std::endl;
+            exit(EXIT_FAILURE);
         }
         initTracker();
     }
@@ -50,7 +52,7 @@ public:
     
     void initTracker()
     {
-        bboxKF_->initKf(dt_);
+        bboxKF_->initKf(dt_, 1e-5, 1e-5);
         lostCount = 0;
         target_.clear();
     }
