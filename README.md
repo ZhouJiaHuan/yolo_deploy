@@ -4,19 +4,20 @@
 
 This repository implemented the inference of yolo detectors with **ONNXRuntime**, **MNN** and **TensorRT** framework for fast deployment: 
 
-|      model       |                    Github                     | ONNX | MNN  | TensorRT |
-| :--------------: | :-------------------------------------------: | :--: | :--: | :------: |
-|      YOLOx       | https://github.com/Megvii-BaseDetection/YOLOX |  N   |  Y   |    N     |
-|      YOLOv6      |       https://github.com/meituan/YOLOv6       |  N   |  Y   |    Y     |
-|      YOLOv8      |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
-| YOLOv7-keypoints |    https://github.com/derronqi/yolov7-face    |  Y   |  N   |    N     |
-| YOLOv8-keypoints |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
-|    YOLOv8-sot    |  https://github.com/ultralytics/ultralytics   |  N   |  N   |    Y     |
+|       model       |                    Github                     | ONNX | MNN  | TensorRT |
+| :---------------: | :-------------------------------------------: | :--: | :--: | :------: |
+|       YOLOx       | https://github.com/Megvii-BaseDetection/YOLOX |  N   |  Y   |    N     |
+| YOLOx (mmdet 3.0) |   https://github.com/open-mmlab/mmdetection   |  Y   |  N   |    N     |
+|      YOLOv6       |       https://github.com/meituan/YOLOv6       |  N   |  Y   |    Y     |
+|      YOLOv8       |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
+| YOLOv7-keypoints  |    https://github.com/derronqi/yolov7-face    |  Y   |  N   |    N     |
+| YOLOv8-keypoints  |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
+|    YOLOv8-sot     |  https://github.com/ultralytics/ultralytics   |  N   |  N   |    Y     |
 
 ## Requirements
 
 - MNN >= 2.0.0
-- ONNXRuntime
+- ONNXRuntime >=1.8.1
 - TensorRT >= 8.5
 
 ## Demo
