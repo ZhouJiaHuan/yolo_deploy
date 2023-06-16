@@ -7,7 +7,7 @@ This repository implemented the inference of yolo detectors with **ONNXRuntime**
 |       model       |                    Github                     | ONNX | MNN  | TensorRT |
 | :---------------: | :-------------------------------------------: | :--: | :--: | :------: |
 |       YOLOx       | https://github.com/Megvii-BaseDetection/YOLOX |  N   |  Y   |    N     |
-| YOLOx (mmdet 3.0) |   https://github.com/open-mmlab/mmdetection   |  Y   |  N   |    N     |
+| YOLOx (mmdet 3.0) |   https://github.com/open-mmlab/mmdetection   |  Y   |  Y   |    N     |
 |      YOLOv6       |       https://github.com/meituan/YOLOv6       |  N   |  Y   |    Y     |
 |      YOLOv8       |  https://github.com/ultralytics/ultralytics   |  Y   |  Y   |    Y     |
 | YOLOv7-keypoints  |    https://github.com/derronqi/yolov7-face    |  Y   |  N   |    N     |
