@@ -48,6 +48,10 @@ struct MNNDetConfigs
  * The ONNX model was converted with mmdeploy 1.1.0
  * and the MNN model was converted with MNNConvert (MNN >= 2.0.0).
  * NMS process was included in ONNX model (end to end).
+ * 
+ * Note:
+ * Only the static model was supported during the conversion
+ * from ONNX to MNN. The dynamic model may cause some problems
  */
 class YoloxMMdetMNN
 {
